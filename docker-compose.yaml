@@ -62,9 +62,9 @@ services:
           "curl",
           "-s",
           "-f",
-          "http://localhost:9200/_cluster/health?pretty=true",
+          "http://localhost:9200/_cluster/health?wait_for_status=yellow",
         ]
-      interval: 15s
+      interval: 5s
       timeout: 5s
       retries: 5
     volumes:
