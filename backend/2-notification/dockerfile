@@ -19,7 +19,7 @@ COPY package*.json .npmrc ./
 RUN --mount=type=secret,id=npmrc \
     NPM_TOKEN=$(cat /run/secrets/npmrc) \
     npm ci --production
-COPY --from=builder /app/build ./build
+COPY --from=base /app/build ./build
 
 EXPOSE 8000
 
