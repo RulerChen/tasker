@@ -55,6 +55,18 @@ services:
       xpack.security.enrollment.enabled: true
       xpack.security.authc.token.enabled: true
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-s",
+          "-f",
+          "http://localhost:9200/_cluster/health?pretty=true",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./volumns/elasticsearch:/usr/share/elasticsearch/data
     ports:
@@ -82,6 +94,33 @@ services:
     depends_on:
       - elasticsearch
 
+  notification:
+    container_name: notification
+    build:
+      context: ./backend/2-notification
+      dockerfile: dockerfile.dev
+      secrets:
+        - npmrc
+    restart: always
+    env_file:
+      - path: ./backend/2-notification/.env
+        required: true
+    environment:
+      - ELASTIC_SEARCH_URL=http://elasticsearch:9200
+      - RABBITMQ_ENDPOINT=amqp://tasker:tasker@rabbitmq:5672
+    ports:
+      - "8002:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - tasker
+
 networks:
   tasker:
   elastic:
+
+secrets:
+  npmrc:
+    file: npmrc
