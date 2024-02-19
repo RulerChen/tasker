@@ -1,6 +1,6 @@
 import express from 'express';
 import { GatewayServer } from './server.js';
-// import { redisConnection } from '@gateway/redis/redis.connection';
+// import { redisConnection } from './redis/redis.connection';
 
 class Application {
   initialize() {

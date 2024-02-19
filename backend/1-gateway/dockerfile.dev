@@ -2,7 +2,7 @@ FROM node:20-alpine3.18
 
 WORKDIR /app
 
-COPY package*.json .npmrc tsconfig.json ./
+COPY package*.json .npmrc ./
 RUN --mount=type=secret,id=npmrc \
     NPM_TOKEN=$(cat /run/secrets/npmrc) \
     npm install

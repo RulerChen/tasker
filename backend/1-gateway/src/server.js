@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import express from 'express';
 import { isAxiosError } from 'axios';
 import { winstonLogger } from '@rulerchen/tasker-shared-library';
+import { appRoutes } from './routes/index.js';
 import { config } from './config.js';
 import { elasticSearch } from './elasticsearch.js';
 
@@ -50,18 +51,18 @@ export class GatewayServer {
       }),
     );
 
-    // app.use((req, _res, next) => {
-    //   if (req.session?.jwt) {
-    //     axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosBuyerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosMessageInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosOrderInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //     axiosReviewInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-    //   }
-    //   next();
-    // });
+    app.use((req, _res, next) => {
+      if (req.session?.jwt) {
+        //     axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosBuyerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosMessageInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosOrderInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        //     axiosReviewInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+      }
+      next();
+    });
   }
 
   standardMiddleware(app) {
@@ -71,7 +72,7 @@ export class GatewayServer {
   }
 
   routesMiddleware(app) {
-    // appRoutes(app);
+    appRoutes(app);
   }
 
   startElasticSearch() {

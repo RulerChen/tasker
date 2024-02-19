@@ -1,7 +1,7 @@
+// import { authMiddleware } from '../services/auth-middleware.js';
 import { healthRoutes } from './health.js';
 // import { authRoutes } from '@gateway/routes/auth';
 // import { currentUserRoutes } from '@gateway/routes/current-user';
-// import { authMiddleware } from '@gateway/services/auth-middleware';
 // import { searchRoutes } from '@gateway/routes/search';
 // import { buyerRoutes } from '@gateway/routes/buyer';
 // import { sellerRoutes } from '@gateway/routes/seller';
@@ -9,12 +9,12 @@ import { healthRoutes } from './health.js';
 // import { messageRoutes } from '@gateway/routes/message';
 // import { orderRoutes } from '@gateway/routes/order';
 // import { reviewRoutes } from '@gateway/routes/review';
-import { config } from '../config.js';
+// import { config } from '../config.js';
 
-const BASE_PATH = `/api/gateway/${config.API_VERSION}`;
+// const BASE_PATH = `/api/gateway/${config.API_VERSION}`;
 
 export const appRoutes = (app) => {
-  app.use('/api/gateway', healthRoutes.routes());
+  app.use('', healthRoutes.routes());
   // app.use(BASE_PATH, authRoutes.routes());
   // app.use(BASE_PATH, searchRoutes.routes());
 

@@ -7,7 +7,7 @@ class HealthRoutes {
   }
 
   routes() {
-    this.router.get('/health', Health.prototype.health);
+    this.router.get('/gateway-health', Health.prototype.health);
     return this.router;
   }
 }
