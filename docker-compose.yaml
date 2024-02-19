@@ -64,7 +64,7 @@ services:
           "-f",
           "http://localhost:9200/_cluster/health?wait_for_status=yellow",
         ]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
     volumes:
@@ -86,13 +86,37 @@ services:
       ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
     volumes:
       - ./config/kibana.yaml:/usr/share/kibana/config/kibana.yml
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
     ports:
       - "5601:5601"
     networks:
       - tasker
       - elastic
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./backend/1-gateway
+      dockerfile: dockerfile.dev
+      secrets:
+        - npmrc
+    restart: always
+    env_file:
+      - path: ./backend/1-gateway/.env
+        required: true
+    environment:
+      - ELASTIC_SEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "8001:8000"
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - tasker
 
   notification:
     container_name: notification
