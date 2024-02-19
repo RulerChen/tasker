@@ -14,7 +14,7 @@ const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-service'
 
 function initializeServer(): void {
   startServer();
-  app.use('/api/notification', healthRoutes());
+  app.use('', healthRoutes());
   void startQueue();
   void startElasticSearch();
   log.info('Notification service Initialized');
