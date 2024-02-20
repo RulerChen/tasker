@@ -8,7 +8,7 @@
     "build": "tsc && tsc-alias && ts-node script/tool.ts",
     "start": "cross-env NODE_ENV=production node ./build/src/index.js | pino-pretty -c",
     "lint": "eslint ./src/**/*.{ts,js} --fix",
-    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false"
+    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__"
   },
   "keywords": [],
   "author": "",
