@@ -11,18 +11,33 @@ services:
     networks:
       - tasker
 
+  postgres_auth:
+    container_name: postgres_auth
+    image: postgres:16.1-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_AUTH_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./volumns/postgres-auth:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tasker
+
   postgres_user:
     container_name: postgres_user
     image: postgres:16.1-alpine
     restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_USER_DB}
-      POSTGRES_USER: ${POSTGRES_USER_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_USER_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./volumns/postgres-user:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - tasker
 
