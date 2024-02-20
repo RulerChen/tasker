@@ -17,7 +17,7 @@ function initializeServer(): void {
   app.use('', healthRoutes());
   void startQueue();
   void startElasticSearch();
-  log.info('Notification service Initialized');
+  log.info('NotificationService Initialized');
 }
 
 initializeServer();

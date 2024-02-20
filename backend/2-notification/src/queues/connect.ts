@@ -12,7 +12,7 @@ async function createConnection(): Promise<Channel | undefined> {
     closeConnection(channel, connection);
     return channel;
   } catch (error) {
-    log.error('Notification service createConnection() error:', error);
+    log.error('NotificationService createConnection() error:', error);
   }
 }
 

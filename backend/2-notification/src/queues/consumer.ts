@@ -26,7 +26,7 @@ async function consumeAuthEmailMessages(channel: Channel): Promise<void> {
       channel.ack(msg!);
     });
   } catch (error) {
-    log.log('error', 'Notification service EmailConsumer consumeAuthEmailMessages() method error:', error);
+    log.log('error', 'NotificatioService EmailConsumer consumeAuthEmailMessages() method error:', error);
   }
 }
 

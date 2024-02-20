@@ -12,7 +12,7 @@ async function sendEmail(template: string, receiverEmail: string, locals: EmailL
     emailTemplates(template, receiverEmail, locals);
     log.info('Email sent successfully.');
   } catch (error) {
-    log.log('error', 'Notification service MailTransport sendEmail() method error:', error);
+    log.log('error', 'NotificatioService MailTransport sendEmail() method error:', error);
   }
 }
 
@@ -54,7 +54,7 @@ async function emailTemplates(template: string, receiver: string, locals: EmailL
       locals,
     });
   } catch (error) {
-    log.error('Notification service EmailTemplates emailTemplates() method error:', error);
+    log.error('NotificationService EmailTemplates emailTemplates() method error:', error);
   }
 }
 
