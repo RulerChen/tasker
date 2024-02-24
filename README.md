@@ -20,6 +20,8 @@ This is a simple task manager similar to Trello and built with microservices arc
 - RabbitMQ
 - NPM Packages
 - Elasticsearch (elasticsearch、kibana、apm-server、metricbeat、heartbeat)
+- Grafana
+- Prometheus
 
 ## Microservices
 
@@ -30,3 +32,12 @@ This is a simple task manager similar to Trello and built with microservices arc
 - 4-board : TODO
 
 keep adding more services...
+
+## TODO LIST
+
+- [ ] Create login frontend
+- [ ] AWS EKS deployment
+- [ ] Jenkins pipeline
+- [ ] Grafana dashboard
+- [ ] Frontend UI
+- [ ] Board Service
