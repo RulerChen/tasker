@@ -1,0 +1,40 @@
+heartbeat.config.monitors:
+  path: ${path.config}/monitors.d/*.yml
+  reload.enabled: false
+  reload.period: 5s
+
+heartbeat.monitors:
+  - type: http
+    id: tasker-apiGateway
+    name: Tasker API Gateway Service
+    schedule: "@every 5s"
+    hosts: ["http://gateway:8000/gateway-health"]
+    check.request.method: GET
+    check.response.status: [200]
+
+  - type: http
+    id: tasker-notification
+    name: Tasker Notification Service
+    schedule: "@every 5s"
+    hosts: ["http://notification:8000/notification-health"]
+    check.request.method: GET
+    check.response.status: [200]
+
+  - type: http
+    id: tasker-auth
+    name: Tasker Auth Service
+    schedule: "@every 5s"
+    hosts: ["http://auth:8000/auth-health"]
+    check.request.method: GET
+    check.response.status: [200]
+
+processors:
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+monitoring.enabled: true
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: "tasker"

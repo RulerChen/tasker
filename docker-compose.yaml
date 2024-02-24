@@ -16,28 +16,13 @@ services:
     image: postgres:16.1-alpine
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_AUTH_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: tasker_auth
+      POSTGRES_USER: tasker
+      POSTGRES_PASSWORD: tasker
     volumes:
       - ./volumns/postgres-auth:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - tasker
-
-  postgres_user:
-    container_name: postgres_user
-    image: postgres:16.1-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: ${POSTGRES_USER_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ./volumns/postgres-user:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
     networks:
       - tasker
 
@@ -46,8 +31,8 @@ services:
     image: rabbitmq:3.13-rc-management-alpine
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_USER: tasker
+      RABBITMQ_DEFAULT_PASS: tasker
     volumes:
       - ./volumns/rabbitmq:/var/lib/rabbitmq
     ports:
@@ -64,23 +49,27 @@ services:
       ES_JAVA_OPTS: -Xmx1g -Xms1g
       bootstrap.memory_lock: true
       discovery.type: single-node
-      xpack.security.enabled: false
+      network.host: 0.0.0.0
+      transport.host: 127.0.0.1
+      http.host: 0.0.0.0
+      xpack.security.enabled: true
       xpack.security.authc.api_key.enabled: true
       xpack.monitoring.collection.enabled: true
       xpack.security.enrollment.enabled: true
       xpack.security.authc.token.enabled: true
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_PASSWORD: tasker
     healthcheck:
       test:
         [
           "CMD",
           "curl",
-          "-s",
           "-f",
-          "http://localhost:9200/_cluster/health?wait_for_status=yellow",
+          "http://localhost:9200/_cluster/health",
+          "-u",
+          "elastic:tasker",
         ]
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 10s
       retries: 5
     volumes:
       - ./volumns/elasticsearch:/usr/share/elasticsearch/data
@@ -90,15 +79,18 @@ services:
     networks:
       - tasker
       - elastic
+    # curl -s -X POST -u elastic:tasker -H "Content-Type:application/json" http://localhost:9200/_security/user/kibana_system/_password -d "{\"password\":\"kibana\"}"
 
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:8.12.1
     restart: always
     environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
-      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL3Rhc2tlci1raWJhbmE6bFhzZ3hmXzVRLXF0QVJmeUNFd1g4QQ
+      - XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS=["http://elasticsearch:9200"]
     volumes:
       - ./config/kibana.yaml:/usr/share/kibana/config/kibana.yml
     depends_on:
@@ -110,6 +102,70 @@ services:
     networks:
       - tasker
       - elastic
+
+  metricbeat:
+    container_name: metricbeat
+    image: docker.elastic.co/beats/metricbeat:8.12.1
+    user: root
+    ports:
+      - 5066:5066
+    volumes:
+      - ./config/metricbeat.yaml:/usr/share/metricbeat/metricbeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    command: ["--strict.perms=false", "-system.hostfs=/hostfs"]
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - elastic
+      - tasker
+
+  heartbeat:
+    container_name: heartbeat
+    image: docker.elastic.co/beats/heartbeat:8.12.1
+    user: root
+    hostname: heartbeat
+    cap_add:
+      - NET_RAW
+    command: ["--strict.perms=false"]
+    volumes:
+      - ./config/heartbeat.yaml:/usr/share/heartbeat/heartbeat.yml:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - elastic
+      - tasker
+
+  apmServer:
+    container_name: apmServer
+    image: docker.elastic.co/apm/apm-server:8.12.1
+    command: >
+      apm-server -e
+        -E apm-server.rum.enabled=true
+        -E setup.kibana.host=kibana:5601
+        -E setup.template.settings.index.number_of_replicas=0
+        -E apm-server.kibana.enabled=true
+        -E apm-server.kibana.host=kibana:5601
+        -E apm-server.kibana.protocol=http
+        -E strict.perms=false
+        -E apm-server.auth.anonymous.enabled=true
+    ports:
+      - 8200:8200
+    volumes:
+      - ./config/apm-server.yaml:/usr/share/apm-server/apm-server.yml:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - elastic
+      - tasker
 
   gateway:
     container_name: gateway
@@ -123,7 +179,10 @@ services:
       - path: ./backend/1-gateway/.env
         required: true
     environment:
-      - ELASTIC_SEARCH_URL=http://elasticsearch:9200
+      - ELASTIC_SEARCH_URL=http://elastic:tasker@elasticsearch:9200
+      - AUTH_BASE_URL=http://auth:8000
+      - REDIS_HOST=redis://redis:6379
+      - ELASTIC_APM_SERVER_URL=http://apmServer:8200
     ports:
       - "8001:8000"
     depends_on:
@@ -145,10 +204,37 @@ services:
       - path: ./backend/2-notification/.env
         required: true
     environment:
-      - ELASTIC_SEARCH_URL=http://elasticsearch:9200
+      - ELASTIC_SEARCH_URL=http://elastic:tasker@elasticsearch:9200
       - RABBITMQ_ENDPOINT=amqp://tasker:tasker@rabbitmq:5672
+      - ELASTIC_APM_SERVER_URL=http://apmServer:8200
     ports:
       - "8002:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+        restart: true
+    networks:
+      - tasker
+
+  auth:
+    container_name: auth
+    build:
+      context: ./backend/3-auth
+      dockerfile: dockerfile.dev
+      secrets:
+        - npmrc
+    restart: always
+    env_file:
+      - path: ./backend/3-auth/.env
+        required: true
+    environment:
+      - ELASTIC_SEARCH_URL=http://elastic:tasker@elasticsearch:9200
+      - RABBITMQ_ENDPOINT=amqp://tasker:tasker@rabbitmq:5672
+      - DATABASE_HOST=postgres_auth
+      - DATABASE_PORT=5432
+      - ELASTIC_APM_SERVER_URL=http://apmServer:8200
+    ports:
+      - "8003:8000"
     depends_on:
       elasticsearch:
         condition: service_healthy
