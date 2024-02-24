@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { sign } from 'jsonwebtoken';
-import { config } from '../config';
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
 
 export class AxiosService {
   constructor(baseUrl, serviceName) {
@@ -10,7 +10,7 @@ export class AxiosService {
   axiosCreateInstance(baseUrl, serviceName) {
     let requestGatewayToken = '';
     if (serviceName) {
-      requestGatewayToken = sign({ id: serviceName }, `${config.GATEWAY_JWT_TOKEN}`);
+      requestGatewayToken = jwt.sign({ id: serviceName }, `${config.GATEWAY_JWT_TOKEN}`);
     }
     const instance = axios.create({
       baseURL: baseUrl,

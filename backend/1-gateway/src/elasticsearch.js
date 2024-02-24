@@ -22,6 +22,7 @@ class ElasticSearch {
       } catch (error) {
         log.error('Connection to ElasticSearch failed, Retrying...');
         log.log('error', 'GatewayService checkConnection() method error:', error);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
       }
     }
   }

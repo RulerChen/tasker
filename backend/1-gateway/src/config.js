@@ -1,19 +1,20 @@
 import dotenv from 'dotenv';
+import elasticApmNode from 'elastic-apm-node';
 
 dotenv.config({});
 
-// if (process.env.ENABLE_APM === '1') {
-//   require('elastic-apm-node').start({
-//     serviceName: 'jobber-gateway',
-//     serverUrl: process.env.ELASTIC_APM_SERVER_URL,
-//     secretToken: process.env.ELASTIC_APM_SECRET_TOKEN,
-//     environment: process.env.NODE_ENV,
-//     active: true,
-//     captureBody: 'all',
-//     errorOnAbortedRequests: true,
-//     captureErrorLogStackTraces: 'always',
-//   });
-// }
+if (process.env.ENABLE_APM === '1') {
+  elasticApmNode.start({
+    serviceName: 'tasker-gateway',
+    serverUrl: process.env.ELASTIC_APM_SERVER_URL,
+    secretToken: process.env.ELASTIC_APM_SECRET_TOKEN,
+    environment: process.env.NODE_ENV,
+    active: true,
+    captureBody: 'all',
+    errorOnAbortedRequests: true,
+    captureErrorLogStackTraces: 'always',
+  });
+}
 
 class Config {
   constructor() {

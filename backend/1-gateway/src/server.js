@@ -1,15 +1,16 @@
 import 'express-async-errors';
+import { isAxiosError } from 'axios';
 import cors from 'cors';
 import compression from 'compression';
 import cookieSession from 'cookie-session';
+import express from 'express';
 import hpp from 'hpp';
 import helmet from 'helmet';
-import express from 'express';
-import { isAxiosError } from 'axios';
 import { winstonLogger } from '@rulerchen/tasker-shared-library';
 import { appRoutes } from './routes/index.js';
 import { config } from './config.js';
 import { elasticSearch } from './elasticsearch.js';
+import { axiosAuthInstance } from './services/api/auth.service.js';
 
 const PORT = process.env.PORT ?? 8000;
 const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'apiGatewayServer', 'debug');
@@ -51,15 +52,9 @@ export class GatewayServer {
       }),
     );
 
-    app.use((req, _res, next) => {
+    app.use((req, res, next) => {
       if (req.session?.jwt) {
-        //     axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosBuyerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosMessageInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosOrderInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
-        //     axiosReviewInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        axiosAuthInstance.defaults.headers.Authorization = `Bearer ${req.session?.jwt}`;
       }
       next();
     });
@@ -105,32 +100,15 @@ export class GatewayServer {
   async startServer(app) {
     try {
       this.startHttpServer(app);
-      // const socketIO = await this.createSocketIO(httpServer);
-      // this.socketIOConnections(socketIO);
     } catch (error) {
       log.log('error', 'GatewayService startServer() error method:', error);
     }
   }
 
-  // async createSocketIO(httpServer) {
-  //   const io = new Server(httpServer, {
-  //     cors: {
-  //       origin: `${config.CLIENT_URL}`,
-  //       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  //     },
-  //   });
-  //   const pubClient = createClient({ url: config.REDIS_HOST });
-  //   const subClient = pubClient.duplicate();
-  //   await Promise.all([pubClient.connect(), subClient.connect()]);
-  //   io.adapter(createAdapter(pubClient, subClient));
-  //   socketIO = io;
-  //   return io;
-  // }
-
-  async startHttpServer(httpServer) {
+  startHttpServer(app) {
     try {
       log.info(`Gateway server has started with process id ${process.pid}`);
-      httpServer.listen(PORT, () => {
+      app.listen(PORT, () => {
         log.info(`Gateway server running on port ${PORT}`);
       });
     } catch (error) {

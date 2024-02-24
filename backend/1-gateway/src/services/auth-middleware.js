@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
 
 class AuthMiddleware {
   verifyUser(req, res, next) {
@@ -8,7 +8,7 @@ class AuthMiddleware {
     }
 
     try {
-      const payload = verify(req.session?.jwt, `${config.JWT_TOKEN}`);
+      const payload = jwt.verify(req.session?.jwt, `${config.JWT_TOKEN}`);
       req.currentUser = payload;
     } catch (error) {
       throw new Error('Token is not available. Please login again.');
