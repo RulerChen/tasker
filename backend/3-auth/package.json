@@ -7,18 +7,19 @@
     "dev": "cross-env NODE_ENV=development nodemon ./src/index.js | pino-pretty -c",
     "start": "cross-env NODE_ENV=production node ./src/index.js | pino-pretty -c",
     "lint": "eslint ./src/**/*",
-    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false --testPathPattern=src/__tests__"
+    "test": "jest --coverage=true -w=1 --forceExit --detectOpenHandles --watchAll=false"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@rulerchen/tasker-shared-library": "^0.0.2",
+    "@rulerchen/tasker-shared-library": "^0.0.3",
     "amqplib": "^0.10.3",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cors": "~2.8.5",
     "dotenv": "~16.4.1",
+    "elastic-apm-node": "^4.4.1",
     "express": "~4.18.2",
     "express-async-errors": "^3.1.1",
     "helmet": "^7.1.0",
@@ -26,9 +27,13 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "pino-pretty": "^10.3.1",
+    "uuid": "^9.0.1",
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "babel-jest": "^29.7.0",
     "cross-env": "~7.0.3",
     "eslint": "~8.56.0",
     "eslint-config-prettier": "~9.1.0",

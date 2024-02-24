@@ -1,20 +1,21 @@
 import cloudinary from 'cloudinary';
 import dotenv from 'dotenv';
+import elasticApmNode from 'elastic-apm-node';
 
 dotenv.config({});
 
-// if (process.env.ENABLE_APM === '1') {
-//   require('elastic-apm-node').start({
-//     serviceName: 'jobber-gateway',
-//     serverUrl: process.env.ELASTIC_APM_SERVER_URL,
-//     secretToken: process.env.ELASTIC_APM_SECRET_TOKEN,
-//     environment: process.env.NODE_ENV,
-//     active: true,
-//     captureBody: 'all',
-//     errorOnAbortedRequests: true,
-//     captureErrorLogStackTraces: 'always',
-//   });
-// }
+if (process.env.ENABLE_APM === '1') {
+  elasticApmNode.start({
+    serviceName: 'tasker-auth',
+    serverUrl: process.env.ELASTIC_APM_SERVER_URL,
+    secretToken: process.env.ELASTIC_APM_SECRET_TOKEN,
+    environment: process.env.NODE_ENV,
+    active: true,
+    captureBody: 'all',
+    errorOnAbortedRequests: true,
+    captureErrorLogStackTraces: 'always',
+  });
+}
 
 class Config {
   constructor() {
@@ -28,6 +29,7 @@ class Config {
     this.DATABASE_USER = process.env.DATABASE_USER || '';
     this.DATABASE_PASSWORD = process.env.DATABASE_PASSWORD || '';
     this.DATABASE_NAME = process.env.DATABASE_NAME || '';
+    this.DATABASE_PORT = process.env.DATABASE_PORT || '';
     this.CLOUD_NAME = process.env.CLOUD_NAME || '';
     this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '';
     this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || '';
