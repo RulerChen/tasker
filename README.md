@@ -22,6 +22,7 @@ This is a simple task manager similar to Trello and built with microservices arc
 - Elasticsearch (elasticsearch、kibana、apm-server、metricbeat、heartbeat)
 - Grafana
 - Prometheus
+- Terraform
 
 ## Microservices
 
@@ -39,5 +40,6 @@ keep adding more services...
 - [ ] AWS EKS deployment
 - [ ] Jenkins pipeline
 - [ ] Grafana dashboard
+- [ ] Terraform
 - [ ] Frontend UI
 - [ ] Board Service
