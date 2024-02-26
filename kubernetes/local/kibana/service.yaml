@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasker-kibana
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: tasker-kibana
+  ports:
+    - name: tasker-kibana
+      port: 5601
+      targetPort: 5601
+      protocol: TCP

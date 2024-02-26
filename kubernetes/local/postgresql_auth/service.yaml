@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasker-postgres-auth
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: tasker-postgres-auth
+  ports:
+    - name: tasker-postgres-auth
+      port: 5432
+      targetPort: 5432

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-notification
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-notification
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: tasker-notification
+    spec:
+      containers:
+        - name: tasker-notification
+          image: rulerchen/tasker-2-notification:stable
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 300m
+              memory: 300Mi
+          ports:
+            - name: notification
+              containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: client_url
+            - name: RABBITMQ_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: rabbitmq-endpoint
+            - name: SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: sender-email
+            - name: SENDER_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: sender-email-password
+            - name: ELASTIC_SEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elasticsearch-url
+            - name: ENABLE_APM
+              value: "0"
+            - name: ELASTIC_APM_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-server-url
+            - name: ELASTIC_APM_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-secret-token

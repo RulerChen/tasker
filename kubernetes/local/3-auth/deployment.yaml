@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-auth
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-auth
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: tasker-auth
+    spec:
+      containers:
+        - name: tasker-auth
+          image: rulerchen/tasker-3-auth:stable
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 150Mi
+          ports:
+            - name: auth
+              containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: API_VERSION
+              value: "v1"
+            - name: GATEWAY_JWT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: gateway-jwt-token
+            - name: JWT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: jwt-token
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: client_url
+            - name: API_GATEWAY_URL
+              value: "http://tasker-gateway.production.svc.cluster.local:8000"
+            - name: RABBITMQ_ENDPOINT
+              value: amqp://tasker:tasker@tasker-queue.production.svc.cluster.local:5672
+
+            - name: DATABASE_HOST
+              value: tasker-postgres-auth.production.svc.cluster.local
+            - name: DATABASE_USER
+              value: tasker
+            - name: DATABASE_PASSWORD
+              value: tasker
+            - name: DATABASE_NAME
+              value: tasker-auth
+            - name: DATABASE_PORT
+              value: "5432"
+
+            - name: CLUSTER_TYPE
+              value: "local"
+
+            - name: CLOUD_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: cloud-name
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: cloud-api-key
+            - name: CLOUD_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: cloud-api-secret
+
+            - name: ELASTIC_SEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elasticsearch-url
+            - name: ENABLE_APM
+              value: "0"
+            - name: ELASTIC_APM_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-server-url
+            - name: ELASTIC_APM_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-secret-token

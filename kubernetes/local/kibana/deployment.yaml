@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-kibana
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-kibana
+  template:
+    metadata:
+      labels:
+        app: tasker-kibana
+    spec:
+      containers:
+        - name: tasker-kibana
+          image: docker.elastic.co/kibana/kibana:8.12.1
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1500m"
+            requests:
+              cpu: 250m
+              memory: 1Gi
+          ports:
+            - name: tasker-kibana
+              containerPort: 5601
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              # http://<service-name>.<namespace>.svc.cluster.local:<port-number>
+              # http://tasker-elastic:9200 (same namespace)
+              value: http://tasker-elastic.production.svc.cluster.local:9200
+              # curl -s -X POST -u elastic:tasker -H "Content-Type: application/json" http://tasker-elastic.production.svc.cluster.local:9200/_security/user/kibana_system/_password -d "{\"password\":\"kibana\"}"
+            - name: ELASTICSEARCH_USERNAME
+              value: kibana_system
+            - name: ELASTICSEARCH_PASSWORD
+              value: kibana
+              # cd bin && elasticsearch-service-tokens create elastic/kibana tasker-kibana
+            - name: ELASTICSEARCH_SERVICEACCOUNT_TOKEN
+              value: AAEAAWVsYXN0aWMva2liYW5hL3Rhc2tlci1raWJhbmE6VjJOTVhlMlRURkM2ZFYwQU1WMWUyUQ
+          volumeMounts:
+            - name: kibana-config
+              mountPath: /usr/share/kibana/config
+      volumes:
+        - name: kibana-config
+          configMap:
+            name: kibana-config

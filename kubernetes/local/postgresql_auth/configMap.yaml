@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-auth-config
+  namespace: production
+data:
+  POSTGRES_USER: tasker
+  POSTGRES_PASSWORD: tasker
+  POSTGRES_DB: tasker-auth
+  PGDATA: /var/lib/postgresql/data/pgdata

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasker-auth
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: tasker-auth
+  ports:
+    - name: auth
+      port: 8003
+      targetPort: 8000
+      protocol: TCP

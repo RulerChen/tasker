@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-gateway
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-gateway
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: tasker-gateway
+    spec:
+      containers:
+        - name: tasker-gateway
+          image: rulerchen/tasker-1-gateway:stable
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 150Mi
+          ports:
+            - name: gateway
+              containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: GATEWAY_JWT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: gateway-jwt-token
+            - name: JWT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: jwt-token
+            - name: SECRET_KEY_ONE
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: secret-key-one
+            - name: SECRET_KEY_TWO
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: secret-key-two
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: client_url
+            - name: ELASTIC_SEARCH_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elasticsearch-url
+            - name: ENABLE_APM
+              value: "0"
+            - name: ELASTIC_APM_SERVER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-server-url
+            - name: ELASTIC_APM_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elastic-apm-secret-token
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: redis-host
+            - name: AUTH_BASE_URL
+              value: "http://tasker-auth.production.svc.cluster.local:8003"

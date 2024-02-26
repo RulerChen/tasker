@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tasker-gateway-ingress
+  namespace: production
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: tasker-gateway
+      port:
+        number: 8000
+  tls:
+    - hosts:
+        - taskerapp.com
+      secretName: tasker-tls
+  rules:
+    - host: taskerapp.com
+      http:
+        paths:
+          - path: /api/gateway/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: tasker-gateway
+                port:
+                  number: 8000
+# minikube addons enable ingress
+# minikube tunnel
+# kubectl -n production create secret tls tasker-tls --key taskerapp.com.key --cert taskerapp.com.crt
+# minikube addons configure ingress

@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-postgres-auth
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-postgres-auth
+  template:
+    metadata:
+      labels:
+        app: tasker-postgres-auth
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: tasker-postgres-auth
+          image: postgres:16.1-alpine
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: postgres-auth-config
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "0.5"
+            requests:
+              cpu: 100m
+              memory: 150Mi
+          ports:
+            - name: postgres-auth
+              containerPort: 5432
+          volumeMounts:
+            - name: postgres-auth-local-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          readinessProbe:
+            exec:
+              command:
+                [
+                  "psql",
+                  "-w",
+                  "-U",
+                  "tasker",
+                  "-d",
+                  "tasker-auth",
+                  "-c",
+                  "SELECT 1",
+                ]
+            initialDelaySeconds: 120
+            periodSeconds: 300
+            timeoutSeconds: 60
+          livenessProbe:
+            exec:
+              command:
+                [
+                  "psql",
+                  "-w",
+                  "-U",
+                  "tasker",
+                  "-d",
+                  "tasker-auth",
+                  "-c",
+                  "SELECT 1",
+                ]
+            initialDelaySeconds: 120
+            periodSeconds: 300
+            timeoutSeconds: 60
+      volumes:
+        - name: postgres-auth-local-storage
+          persistentVolumeClaim:
+            claimName: postgres-auth-pvc
