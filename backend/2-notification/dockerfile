@@ -25,5 +25,8 @@ EXPOSE 8000
 
 CMD ["npm", "run", "start"]
 
-# docker image build --secret id=npmrc,src=npmrc -t notification -f backend/2-notification/dockerfile .
+# docker image build --secret id=npmrc,src=npmrc -t rulerchen/tasker-2-notification .
+# docker tag rulerchen/tasker-2-notification rulerchen/tasker-2-notification:stable
+# docker push rulerchen/tasker-2-notification:stable
+
 

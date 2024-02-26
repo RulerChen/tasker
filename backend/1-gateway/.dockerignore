@@ -1,0 +1,17 @@
+node_moduels
+
+.git
+.gitignore
+
+coverage
+.env
+.env.example
+
+npmrc
+
+.prettierrc
+
+dockerfile
+dockerfile.dev
+
+README.md
