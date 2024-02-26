@@ -3,3 +3,5 @@ volumns/
 .env
 
 npmrc
+
+secret/
