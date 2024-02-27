@@ -93,7 +93,7 @@ spec:
                   name: tasker-backend-secret
                   key: elasticsearch-url
             - name: ENABLE_APM
-              value: "0"
+              value: "1"
             - name: ELASTIC_APM_SERVER_URL
               valueFrom:
                 secretKeyRef:
