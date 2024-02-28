@@ -167,11 +167,37 @@ services:
       - elastic
       - tasker
 
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./volumns/jenkins/config:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - tasker
+
+  jenkins-agent:
+    container_name: jenkins-agent
+    image: jenkins/ssh-agent:jdk11
+    privileged: true
+    user: root
+    expose:
+      - 22
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDDsKbwjgeLCuRXghRiUBlMvFDrfHiLMN89i1O1haVIs8HBDNUeD+TGxGi/UZ4I0PR6O6g19MYo/qaL7ro9G/dvRSsUAtrmh2bVJYXxVZWzscMPuXoNJSA8FOG8pbzqvzs/x3JiZw+L9+namV9zmUz2FQVWOC3Obu5q8hD+C2AJ3akjtLQFqU5D7jWH8147uVNZw06c74yCdVxsn1aOqqVU6xwhqY+tnKa/Tf9CPJd9D3sYPHz3In+1Qldlvm+eOkIn5IygIYO34HtMxwd/rxW05XU8LAmZsJ3PLj4pYuOvUG04Rku/gj1I+CntZ9V/b6EnZylbb6tPZnA3gOk+9KyKE104Kbv/Bxy+2tM4eUAmGj3gUCowRz+BX0DI01yhn9OCqPCkj5YTayVxKEpZZEKrF5yJEdJ1Rl+gh9fEGghGKsI4Pm7RsPpI2yE8MccpnUVI5BvwkwWeNGHKsjzGt1CPYCmQCmGVFtz3Yh73pMeZnt+N0FfUA3vh30gGTyUZJBU= rulerchen@RulerChen-Desktop
+    networks:
+      - tasker
+
   gateway:
     container_name: gateway
     build:
       context: ./backend/1-gateway
-      dockerfile: dockerfile.dev
+      dockerfile: Dockerfile.dev
       secrets:
         - npmrc
     restart: always
@@ -196,7 +222,7 @@ services:
     container_name: notification
     build:
       context: ./backend/2-notification
-      dockerfile: dockerfile.dev
+      dockerfile: Dockerfile.dev
       secrets:
         - npmrc
     restart: always
@@ -220,7 +246,7 @@ services:
     container_name: auth
     build:
       context: ./backend/3-auth
-      dockerfile: dockerfile.dev
+      dockerfile: Dockerfile.dev
       secrets:
         - npmrc
     restart: always

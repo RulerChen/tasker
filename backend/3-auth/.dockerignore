@@ -9,9 +9,12 @@ coverage
 
 npmrc
 
-.prettierrc
+.babelrc
 
-dockerfile
-dockerfile.dev
+.prettierrc
+.eslintrc.json
+jest.config.js
+
+Dockerfile.dev
 
 README.md
