@@ -38,7 +38,10 @@ spec:
               value: kibana
               # cd bin && elasticsearch-service-tokens create elastic/kibana tasker-kibana
             - name: ELASTICSEARCH_SERVICEACCOUNT_TOKEN
-              value: AAEAAWVsYXN0aWMva2liYW5hL3Rhc2tlci1raWJhbmE6VjJOTVhlMlRURkM2ZFYwQU1WMWUyUQ
+              valueFrom:
+                secretKeyRef:
+                  name: tasker-backend-secret
+                  key: elasticsearch-serviceaccount-token
           volumeMounts:
             - name: kibana-config
               mountPath: /usr/share/kibana/config
