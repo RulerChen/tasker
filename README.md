@@ -4,26 +4,6 @@
 
 This is a simple task manager similar to Trello and built with microservices architecture.
 
-## Tech Stack
-
-- React
-- Tailwind CSS
-- Express
-- Jest
-- PostgreSQL
-- Redis
-- Docker
-- Kubernetes
-- AWS EKS
-- Jenkins
-- Nginx
-- RabbitMQ
-- NPM Packages
-- Elasticsearch (elasticsearch、kibana、apm-server、metricbeat、heartbeat)
-- Grafana
-- Prometheus
-- Terraform
-
 ## Microservices
 
 - 0-shard-library : NPM package for shared code
@@ -36,10 +16,17 @@ keep adding more services...
 
 ## TODO LIST
 
-- [ ] Create login frontend
-- [ ] AWS EKS deployment
-- [ ] Jenkins pipeline
-- [ ] Grafana dashboard
+- [x] Simple Microservices Architecture
+- [x] Dockerize all services
+- [x] Local Docker Compose
+- [x] Local Elasticsearch
+- [x] Local Minikube
+- [x] Local Jenkins CI/CD
+- [ ] AWS EKS Deployment
+- [ ] Elasticsearch Cloud
 - [ ] Terraform
-- [ ] Frontend UI
-- [ ] Board Service
+- [ ] AWS Jenkins CI/CD
+- [ ] Garfana / Prometheus Monitoring
+- [ ] Simeple UI
+- [ ] Nginx
+- [ ] Frontend Deployment
