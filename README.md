@@ -11,6 +11,7 @@ This is a simple task manager similar to Trello and built with microservices arc
 - 2-notification : Send notifications (node-mailer)
 - 3-auth : JWT Authentication for users
 - 4-board : TODO
+- 10-jenkins : Jenkins groovy scripts
 
 keep adding more services...
 
@@ -22,10 +23,9 @@ keep adding more services...
 - [x] Local Elasticsearch
 - [x] Local Minikube
 - [x] Local Jenkins CI/CD
-- [ ] AWS EKS Deployment
+- [ ] GCP Deployment with Terraform
 - [ ] Elasticsearch Cloud
-- [ ] Terraform
-- [ ] AWS Jenkins CI/CD
+- [ ] Jenkins CI/CD
 - [ ] Garfana / Prometheus Monitoring
 - [ ] Simeple UI
 - [ ] Nginx
